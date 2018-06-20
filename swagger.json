@@ -7,11 +7,8 @@
     "contact": {
       "name": "NFG R&D Team",
       "email": "nfg-rozwoj@nfg.pl",
-      "url": {
-        "name": "Kontakt",
-        "url": "http://nfg.pl/wspolpraca-partnerska/"
-      }
-    },
+      "url": "http://nfg.pl/wspolpraca-partnerska/"
+      },
     "license": {
      "name": "NFG",
      "url": "http://nfg.pl/polityka-prywatnosci/"
