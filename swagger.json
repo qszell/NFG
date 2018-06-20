@@ -16,7 +16,7 @@
    "termsOfService": "http://nfg.pl/polityka-prywatnosci/",
 
     "x-logo": {
-      "url": "https://sof.nfg.pl/UI/themes/newnfg/images/logo.png"
+      "url": "https://qszell.github.io/NFG/NFG.png"
     }
   },
   "host": "api.nfg.pl",
