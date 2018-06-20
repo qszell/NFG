@@ -13,13 +13,8 @@
      "name": "NFG",
      "url": "http://nfg.pl/polityka-prywatnosci/"
    },
-<<<<<<< HEAD
    "termsOfService": "http://nfg.pl/polityka-prywatnosci/"
-   
-=======
-   "termsOfService": "url":"http://nfg.pl/polityka-prywatnosci/"
 
->>>>>>> c236b54440af1d4d973589fe71a1c1b9d6fdf984
     "x-logo": {
       "url": "https://sof.nfg.pl/UI/themes/newnfg/images/logo.png"
     }
