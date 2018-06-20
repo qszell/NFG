@@ -12,6 +12,18 @@
       "url": "https://sof.nfg.pl/UI/themes/newnfg/images/logo.png"
     }
   },
+  {
+  "x-tagGroups": [
+    {
+      "name": "User Management",
+      "tags": ["Users", "API keys", "Admin"]
+    },
+    {
+      "name": "Statistics",
+      "tags": ["Main Stats", "Secondary Stats"]
+    }
+  ]
+}
   "host": "api.nfg.pl",
   "tags": [
     {
