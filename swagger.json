@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.0.2",
+    "version": "1.0.2",
     "title": "System obsługi faktoringu - WebAPI",
     "description": "Dokumentacja dotycząca WebAPI dla Systemu Obsługi Faktoringu należącego do Narodowego Funduszu Gwarancyjnego S.A.",
     "contact": {
