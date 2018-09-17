@@ -1,7 +1,7 @@
 # NFG
 NFG R&D Team: nfg-rozwoj@nfg.pl
 
-URL: http://nfg.pl/wspolpraca-partnerska/
+URL: http://nfg.pl/wspolpraca-partnerska
 
 License: NFG
 
