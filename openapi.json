@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.3",
+    "version": "1.0.4",
     "title": "System obsługi faktoringu - WebAPI",
     "description": "Dokumentacja dotycząca WebAPI dla Systemu Obsługi Faktoringu należącego do Narodowego Funduszu Gwarancyjnego S. A.",
     "contact": {
@@ -256,6 +256,94 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono dokumentu"
+          }
+        },
+        "security": [
+          {
+            "documents_auth": [
+              "sof.documents.fundingdocuments.get"
+            ]
+          }
+        ]
+      }
+    },
+    "/approval/{approvalId}": {
+      "get": {
+        "tags": [
+          "Documents",
+          "Invoice"
+        ],
+        "summary": "Pobranie pliku z pełną treścią zgody",
+        "description": "Metoda umożliwia pobranie pliku z pełną treścią zgody o podanym identyfikatorze",
+        "parameters": [
+          {
+            "name": "approvalId",
+            "in": "path",
+            "required": true,
+            "description": "Identyfikator zgody",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono dokumentu"
+          }
+        },
+        "security": [
+          {
+            "documents_auth": [
+              "sof.documents.fundingdocuments.get"
+            ]
+          }
+        ]
+      }
+    },
+    "/fundingdocuments": {
+      "get": {
+        "tags": [
+          "Documents",
+          "Invoice"
+        ],
+        "summary": "Pobranie listy umów i zgód wymaganych do sfinansowania faktury",
+        "description": "Metoda umożliwia pobranie listy umów i zgód wymaganych do sfinansowania faktury",
+        "responses": {
+          "200": {
+            "description": "Lista umów i zgód wymaganych do sfinansowania faktury",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFundingDocumentsResponse"
                 }
               }
             }
@@ -765,6 +853,40 @@
       }
     },
     "schemas": {
+      "FundingDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "text": {
+            "type": "string",
+            "description": "Treść wyrażanej zgody"
+          },
+          "documentType": {
+            "type": "integer",
+            "description": "Wartości: * `1` - Umowa finansowania * `2` - Ogólne warunki usług faktoringowych * `3` - Treść zgody\n"
+          },
+          "isRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GetFundingDocumentsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FundingDocument"
+            }
+          }
+        }
+      },
       "SmsCodeContextForInvoiceResponse": {
         "type": "object",
         "properties": {
