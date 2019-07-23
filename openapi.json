@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.5",
+    "version": "2.0.0",
     "title": "System obsługi faktoringu - WebAPI",
     "description": "Dokumentacja dotycząca WebAPI dla Systemu Obsługi Faktoringu należącego do Narodowego Funduszu Gwarancyjnego S. A. ![Przepływ finansowania faktury](sof_api_invoice_flow.png \"Przepływ finansowania faktury\")",
     "contact": {
