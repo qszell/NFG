@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.6",
+    "version": "3.0.0",
     "title": "System obsługi faktoringu - WebAPI",
     "description": "Dokumentacja dotycząca WebAPI dla Systemu Obsługi Faktoringu należącego do Narodowego Funduszu Gwarancyjnego S. A. ![Przepływ finansowania faktury](sof_api_invoice_flow.png \"Przepływ finansowania faktury\")",
     "contact": {
@@ -13,10 +13,6 @@
     }
   },
   "tags": [{
-      "name": "Dictionaries",
-      "description": "Wartości słownikowe"
-    },
-    {
       "name": "Client",
       "description": "Informacje o (potencjalnym) kliencie"
     },
@@ -31,6 +27,18 @@
     {
       "name": "Partners",
       "description": "List partnerów klient SOF"
+    },
+    {
+      "name": "Documents",
+      "description": "Dokumenty"
+    },
+    {
+      "name": "SMS",
+      "description": "Wysyłanie wiadomości sms"
+    },
+    {
+      "name": "Dictionaries",
+      "description": "Wartości słownikowe"
     }
   ],
   "paths": {
@@ -673,88 +681,6 @@
         }]
       }
     },
-    "/invoice/{invoiceId}/requirescans": {
-      "get": {
-        "tags": [
-          "Invoice"
-        ],
-        "summary": "Sprawdzenie, czy faktura wymaga załączenia skanów",
-        "description": "Metoda pozwala na sprawdzenie, czy faktura zgłoszona za pomocą metody: POST /invoice, wymaga załączenia skanów",
-        "parameters": [{
-          "name": "invoiceId",
-          "in": "path",
-          "required": true,
-          "description": "Identyfikator faktury",
-          "schema": {
-            "type": "string"
-          }
-        }],
-        "responses": {
-          "200": {
-            "description": "Informacja czy faktura wymaga załączenia skanów",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvoiceRequireScansResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Brak autoryzacji"
-          },
-          "404": {
-            "description": "Nie znaleziono faktury"
-          }
-        },
-        "security": [{
-          "invoices_auth": [
-            "sof.invoice.scans.require"
-          ]
-        }]
-      }
-    },
-    "/invoice/{invoiceId}/cessiontypes": {
-      "get": {
-        "tags": [
-          "Invoice"
-        ],
-        "summary": "Tryby cesji dla faktury",
-        "description": "Metoda pozwala na sprawdzenie dostępnych trybów cesji dla faktury zgłoszonej za pomocą metody: POST /invoice, wymaga załączenia skanów",
-        "parameters": [{
-          "name": "invoiceId",
-          "in": "path",
-          "required": true,
-          "description": "Identyfikator faktury",
-          "schema": {
-            "type": "string"
-          }
-        }],
-        "responses": {
-          "200": {
-            "description": "Lista dostępnych trybów cesji dla faktury",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvoiceCessionTypesResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Brak autoryzacji"
-          },
-          "404": {
-            "description": "Nie znaleziono faktury"
-          }
-        },
-        "security": [{
-          "invoices_auth": [
-            "sof.invoice.scans.require"
-          ]
-        }]
-      }
-    },
     "/invoice/{invoiceId}/fund": {
       "post": {
         "tags": [
@@ -811,6 +737,88 @@
           },
           "required": true
         }
+      }
+    },
+    "/invoice/{invoiceId}/cessiontypes": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Tryby cesji dla faktury",
+        "description": "Metoda pozwala na sprawdzenie dostępnych trybów cesji dla faktury zgłoszonej za pomocą metody: POST /invoice, wymaga załączenia skanów",
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Lista dostępnych trybów cesji dla faktury",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceCessionTypesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono faktury"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.scans.require"
+          ]
+        }]
+      }
+    },
+    "/invoice/{invoiceId}/requirescans": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Sprawdzenie, czy faktura wymaga załączenia skanów",
+        "description": "Metoda pozwala na sprawdzenie, czy faktura zgłoszona za pomocą metody: POST /invoice, wymaga załączenia skanów",
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Informacja czy faktura wymaga załączenia skanów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRequireScansResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono faktury"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.scans.require"
+          ]
+        }]
       }
     },
     "/invoice/scans": {
