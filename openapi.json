@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "2.0.0",
+    "version": "1.0.6",
     "title": "System obsługi faktoringu - WebAPI",
     "description": "Dokumentacja dotycząca WebAPI dla Systemu Obsługi Faktoringu należącego do Narodowego Funduszu Gwarancyjnego S. A. ![Przepływ finansowania faktury](sof_api_invoice_flow.png \"Przepływ finansowania faktury\")",
     "contact": {
@@ -12,21 +12,262 @@
       "url": "https://sof.nfg.pl/UI/themes/newnfg/images/logo.png"
     }
   },
-  "tags": [
+  "tags": [{
+      "name": "Dictionaries",
+      "description": "Wartości słownikowe"
+    },
     {
       "name": "Client",
       "description": "Informacje o (potencjalnym) kliencie"
+    },
+    {
+      "name": "CostDocuments",
+      "description": "Dane faktur kosztowych klienta"
     },
     {
       "name": "Invoice",
       "description": "Zgłaszanie faktur oraz ich status"
     },
     {
-      "name": "Dictionaries",
-      "description": "Wartości słownikowe"
+      "name": "Partners",
+      "description": "List partnerów klient SOF"
     }
   ],
   "paths": {
+    "/api/costdocuments/{id}/file": {
+      "get": {
+        "tags": [
+          "CostDocuments"
+        ],
+        "summary": "Pobranie pliku z dokumentem o przekazanym id",
+        "description": "Metoda pozwala na pobranie pliku z dokumentem o przekazanym id",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator dokumentu",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "sukces",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono dokumentu"
+          }
+        },
+        "security": [{
+          "costdocuments_auth": [
+            "sof.costdocument.file.get"
+          ]
+        }]
+      }
+    },
+    "/api/costdocuments/{id}": {
+      "get": {
+        "tags": [
+          "CostDocuments"
+        ],
+        "summary": "Pobranie danych dokumentu o przekazanym id",
+        "description": "Metoda pozwala na pobranie danych dokumentu o przekazanym id",
+        "parameters": [{
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator dokumentu",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Szczegóły dokumentu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CostDocument"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono dokumentu"
+          }
+        }
+      }
+    },
+    "/api/costdocuments": {
+      "get": {
+        "tags": [
+          "CostDocuments"
+        ],
+        "summary": "Pobranie listy dokumentów",
+        "description": "Metoda pozwala na pobranie listy dokumentów",
+        "parameters": [{
+            "name": "documentNumber",
+            "in": "query",
+            "description": "Część numeru dokumentu",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "documentNumberExact",
+            "in": "query",
+            "description": "Dokładny numer dokumentu",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "creationDateFrom",
+            "in": "query",
+            "description": "Data utworzenia - początek przedziału",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "creationDateTo",
+            "in": "query",
+            "description": "Data utworzenia - koniec przedziału",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "duePaymentDateFrom",
+            "in": "query",
+            "description": "Termin płatności - początek przedziału",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "duePaymentDateTo",
+            "in": "query",
+            "description": "Termin płatności - koniec przedziału",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "invoiceGrossValueFrom",
+            "in": "query",
+            "description": "Kwota brutto - początek przedziału",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "invoiceGrossValueTo",
+            "in": "query",
+            "description": "Kwota brutto - koniec przedziału",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "invoiceNetValueFrom",
+            "in": "query",
+            "description": "Kwota netto - początek przedziału",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "invoiceNetValueTo",
+            "in": "query",
+            "description": "Kwota netto - koniec przedziału",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "Paginacja - liczba dokumentów do pobrania",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Paginacja - numer strony z wynikami",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "orderBy.name",
+            "in": "query",
+            "description": "Nazwa pola do sortowania",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderBy.direction",
+            "in": "query",
+            "description": "Kierunek sortowania",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista dokumentów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CostDocumentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono dokumentu"
+          }
+        }
+      }
+    },
     "/client/checkIfRegistered/{taxId}": {
       "get": {
         "tags": [
@@ -34,18 +275,16 @@
         ],
         "summary": "Sprawdzenie, czy klient jest zarejestrowany w SOF",
         "description": "Metoda pozwala na sprawdzenie, czy klient jest zarejestrowany w SOF. W przypadku nieprawidłowego NIPu zostanie zwrócony HTTP 400",
-        "parameters": [
-          {
-            "name": "taxId",
-            "in": "path",
-            "required": true,
-            "description": "NIP klienta",
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+        "parameters": [{
+          "name": "taxId",
+          "in": "path",
+          "required": true,
+          "description": "NIP klienta",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "Informacja czy klient jest zarejestrowany w Systemie obsługi faktoringu",
@@ -61,13 +300,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "client_credentials_auth": [
-              "sof.clients.nip.isregistered"
-            ]
-          }
-        ]
+        "security": [{
+          "client_credentials_auth": [
+            "sof.clients.nip.isregistered"
+          ]
+        }]
       }
     },
     "/client/canAddInvoice": {
@@ -92,13 +329,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "client_credentials_auth": [
-              "sof.clients.invoices.fundingavailable"
-            ]
-          }
-        ]
+        "security": [{
+          "client_credentials_auth": [
+            "sof.clients.invoices.fundingavailable"
+          ]
+        }]
       }
     },
     "/client/canFundInvoice": {
@@ -108,8 +343,7 @@
         ],
         "summary": "Sprawdzenie, czy klient ma możliwość finansowania faktury",
         "description": "Metoda pozwala na sprawdzenie, czy klient powiązany z tokenem ma możliwość finansowania faktury",
-        "parameters": [
-          {
+        "parameters": [{
             "in": "query",
             "name": "invoiceNumber",
             "required": true,
@@ -142,13 +376,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "client_credentials_auth": [
-              "sof.clients.invoices.fundingavailable"
-            ]
-          }
-        ]
+        "security": [{
+          "client_credentials_auth": [
+            "sof.clients.invoices.fundingavailable"
+          ]
+        }]
       }
     },
     "/client/details": {
@@ -173,13 +405,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "client_credentials_auth": [
-              "sof.clients.details"
-            ]
-          }
-        ]
+        "security": [{
+          "client_credentials_auth": [
+            "sof.clients.details"
+          ]
+        }]
       }
     },
     "/generalterms": {
@@ -214,13 +444,11 @@
             "description": "Nie znaleziono dokumentu"
           }
         },
-        "security": [
-          {
-            "documents_auth": [
-              "sof.documents.generalterms.get"
-            ]
-          }
-        ]
+        "security": [{
+          "documents_auth": [
+            "sof.documents.generalterms.get"
+          ]
+        }]
       }
     },
     "/invoicedocuments/{invoiceId}/fundingagreement": {
@@ -231,17 +459,15 @@
         ],
         "summary": "Pobranie umowy finansowania faktury",
         "description": "Metoda umożliwia pobranie umowy finansowania faktury o podanym identyfikatorze",
-        "parameters": [
-          {
-            "name": "invoiceId",
-            "in": "path",
-            "required": true,
-            "description": "Identyfikator faktury",
-            "schema": {
-              "type": "string"
-            }
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "Sukces",
@@ -267,13 +493,11 @@
             "description": "Nie znaleziono dokumentu"
           }
         },
-        "security": [
-          {
-            "documents_auth": [
-              "sof.documents.fundingdocuments.get"
-            ]
-          }
-        ]
+        "security": [{
+          "documents_auth": [
+            "sof.documents.fundingdocuments.get"
+          ]
+        }]
       }
     },
     "/approval/{approvalId}": {
@@ -284,17 +508,15 @@
         ],
         "summary": "Pobranie pliku z pełną treścią zgody",
         "description": "Metoda umożliwia pobranie pliku z pełną treścią zgody o podanym identyfikatorze",
-        "parameters": [
-          {
-            "name": "approvalId",
-            "in": "path",
-            "required": true,
-            "description": "Identyfikator zgody",
-            "schema": {
-              "type": "string"
-            }
+        "parameters": [{
+          "name": "approvalId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator zgody",
+          "schema": {
+            "type": "string"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "Sukces",
@@ -320,13 +542,11 @@
             "description": "Nie znaleziono dokumentu"
           }
         },
-        "security": [
-          {
-            "documents_auth": [
-              "sof.documents.fundingdocuments.get"
-            ]
-          }
-        ]
+        "security": [{
+          "documents_auth": [
+            "sof.documents.fundingdocuments.get"
+          ]
+        }]
       }
     },
     "/fundingdocuments": {
@@ -355,13 +575,11 @@
             "description": "Nie znaleziono dokumentu"
           }
         },
-        "security": [
-          {
-            "documents_auth": [
-              "sof.documents.fundingdocuments.get"
-            ]
-          }
-        ]
+        "security": [{
+          "documents_auth": [
+            "sof.documents.fundingdocuments.get"
+          ]
+        }]
       }
     },
     "/invoice/add": {
@@ -396,13 +614,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "invoices_auth": [
-              "sof.invoice.add"
-            ]
-          }
-        ],
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.add"
+          ]
+        }],
         "requestBody": {
           "content": {
             "application/json": {
@@ -423,17 +639,15 @@
         ],
         "summary": "Status zgłoszonej faktury",
         "description": "Metoda pozwala na pobranie statusu faktury zgłoszonej za pomocą metody: POST /invoice",
-        "parameters": [
-          {
-            "name": "invoiceId",
-            "in": "path",
-            "required": true,
-            "description": "Identyfikator faktury",
-            "schema": {
-              "type": "string"
-            }
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "Informacja o powodzeniu dodania faktury",
@@ -452,13 +666,93 @@
             "description": "Nie znaleziono faktury"
           }
         },
-        "security": [
-          {
-            "invoices_auth": [
-              "sof.invoice.status"
-            ]
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.status"
+          ]
+        }]
+      }
+    },
+    "/invoice/{invoiceId}/requirescans": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Sprawdzenie, czy faktura wymaga załączenia skanów",
+        "description": "Metoda pozwala na sprawdzenie, czy faktura zgłoszona za pomocą metody: POST /invoice, wymaga załączenia skanów",
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
           }
-        ]
+        }],
+        "responses": {
+          "200": {
+            "description": "Informacja czy faktura wymaga załączenia skanów",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRequireScansResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono faktury"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.scans.require"
+          ]
+        }]
+      }
+    },
+    "/invoice/{invoiceId}/cessiontypes": {
+      "get": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Tryby cesji dla faktury",
+        "description": "Metoda pozwala na sprawdzenie dostępnych trybów cesji dla faktury zgłoszonej za pomocą metody: POST /invoice, wymaga załączenia skanów",
+        "parameters": [{
+          "name": "invoiceId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator faktury",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Lista dostępnych trybów cesji dla faktury",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceCessionTypesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono faktury"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.scans.require"
+          ]
+        }]
       }
     },
     "/invoice/{invoiceId}/fund": {
@@ -468,17 +762,15 @@
         ],
         "summary": "Skierowanie faktury do finansowania",
         "description": "Faktura o podanym indentyfikatorze znajdująca się w Systemie Obsługi Faktoringu zostanie skierowana do procesu finansowania",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "invoiceId",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+        "parameters": [{
+          "in": "path",
+          "name": "invoiceId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "Sukces",
@@ -504,18 +796,114 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "invoices_auth": [
-              "sof.invoice.fund"
-            ]
-          }
-        ],
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.fund"
+          ]
+        }],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/FundInvoiceRequest"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/invoice/scans": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Załączenie skanów do faktury",
+        "description": "Załączenie plików ze skanami dla faktury skierowanej do finansowania.",
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddInvoiceScansResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddInvoiceScansResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.scans.upload"
+          ]
+        }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddInvoiceScans"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/invoice/cession": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "Wybranie trybu cesji dla faktury",
+        "description": "Wybranie jednego z dostępnych trybów cesji dla faktury. Możliwe jest też załączenie plików ze skanami.",
+        "responses": {
+          "200": {
+            "description": "Sukces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CessionTypeDecisionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CessionTypeDecisionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          }
+        },
+        "security": [{
+          "invoices_auth": [
+            "sof.invoice.cession.set"
+          ]
+        }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CessionTypeDecision"
               }
             }
           },
@@ -555,13 +943,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "sms_auth": [
-              "sof.sms.send"
-            ]
-          }
-        ],
+        "security": [{
+          "sms_auth": [
+            "sof.sms.send"
+          ]
+        }],
         "requestBody": {
           "content": {
             "application/json": {
@@ -581,17 +967,15 @@
         ],
         "summary": "Wygenerowanie kontekstu SMS",
         "description": "Metoda umożliwia wygenerowanie kontekstu SMS potrzebnego do skierowania faktury skierowania faktury do procesu finansowania",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "invoiceId",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+        "parameters": [{
+          "in": "path",
+          "name": "invoiceId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "OK",
@@ -617,13 +1001,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "sms_auth": [
-              "sof.sms.context.invoice.get"
-            ]
-          }
-        ]
+        "security": [{
+          "sms_auth": [
+            "sof.sms.context.invoice.get"
+          ]
+        }]
       }
     },
     "/dictionary/salesObjects": {
@@ -651,13 +1033,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "dictionary_auth": [
-              "sof.dictionary.salesobjects"
-            ]
-          }
-        ]
+        "security": [{
+          "dictionary_auth": [
+            "sof.dictionary.salesobjects"
+          ]
+        }]
       }
     },
     "/dictionary/companyTypes": {
@@ -685,13 +1065,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "dictionary_auth": [
-              "sof.dictionary.companytypes"
-            ]
-          }
-        ]
+        "security": [{
+          "dictionary_auth": [
+            "sof.dictionary.companytypes"
+          ]
+        }]
       }
     },
     "/dictionary/trades": {
@@ -719,13 +1097,11 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "dictionary_auth": [
-              "sof.dictionary.trades"
-            ]
-          }
-        ]
+        "security": [{
+          "dictionary_auth": [
+            "sof.dictionary.trades"
+          ]
+        }]
       }
     },
     "/dictionary/trade/{tradeId}/companyActivityTypes": {
@@ -735,18 +1111,16 @@
         ],
         "summary": "Słownik 'Rodzaj prowadzonej działalności'",
         "description": "Metoda pozwala na pobranie słownika 'Rodzaj prowadzonej działalności' powiązanego ze słownikiem 'Branża'",
-        "parameters": [
-          {
-            "name": "tradeId",
-            "in": "path",
-            "required": true,
-            "description": "Identyfikator branży kontrahenta",
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+        "parameters": [{
+          "name": "tradeId",
+          "in": "path",
+          "required": true,
+          "description": "Identyfikator branży kontrahenta",
+          "schema": {
+            "type": "integer",
+            "format": "int64"
           }
-        ],
+        }],
         "responses": {
           "200": {
             "description": "OK",
@@ -765,23 +1139,108 @@
             "description": "Brak autoryzacji"
           }
         },
-        "security": [
-          {
-            "dictionary_auth": [
-              "sof.dictionary.companyactivitytypes"
-            ]
+        "security": [{
+          "dictionary_auth": [
+            "sof.dictionary.companyactivitytypes"
+          ]
+        }]
+      }
+    },
+    "/dictionary/cessiontypes": {
+      "get": {
+        "tags": [
+          "Dictionaries"
+        ],
+        "summary": "Słownik 'Tryb cesji'",
+        "description": "Metoda pozwala na pobranie słownika 'Tryb cesji'",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DictionaryEntry"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
           }
-        ]
+        },
+        "security": [{
+          "dictionary_auth": [
+            "sof.dictionary.cessiontypes"
+          ]
+        }]
+      }
+    },
+    "/partners/{clientId}": {
+      "get": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "Pobieranie listy partnerów",
+        "description": "Metoda umożliwia pobranie listy partnerów dla klienta SOF, z którymi obecnie jest połączony",
+        "parameters": [{
+          "in": "path",
+          "name": "clientId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetPartnersResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Brak autoryzacji"
+          },
+          "404": {
+            "description": "Nie znaleziono klienta o podanym identyfikatorze"
+          }
+        },
+        "security": [{
+          "partners_auth": [
+            "sof.partners.get"
+          ]
+        }]
       }
     }
   },
-  "servers": [
-    {
-      "url": "http://api.nfg.pl/"
-    }
-  ],
+  "servers": [{
+    "url": "http://api.nfg.pl/"
+  }],
   "components": {
     "securitySchemes": {
+      "costdocuments_auth": {
+        "type": "oauth2",
+        "description": "Autoryzacja dostępu do faktur kosztowych klienta",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://api.nfg.pl/connect/authorize",
+            "scopes": {
+              "sof.costdocument.file.get": "Pobieranie plików z fakturami kosztowymi i ich korektami",
+              "sof.costdocuments.get": "Pobieranie danych faktur kosztowych i korekt"
+            }
+          }
+        }
+      },
       "dictionary_auth": {
         "type": "oauth2",
         "description": "Autoryzacja dostępu do wartości słownikowych",
@@ -833,7 +1292,11 @@
             "scopes": {
               "sof.invoice.add": "Przesłanie faktury kapitałowej do finansowania",
               "sof.invoice.status": "Sprawdzenie statusu faktury kapitałowej",
-              "sof.invoice.fund": "Wysłanie faktury do finansowania"
+              "sof.invoice.scans.require": "Sprawdzenie, czy faktura wymaga załączenia skanów",
+              "sof.invoice.fund": "Wysłanie faktury do finansowania",
+              "sof.invoice.cession.types": "Pobranie listy dostępnych trybów cesji dla faktury",
+              "sof.invoice.cession.set": "Wybranie trybu cesji dla faktury",
+              "sof.invoice.scans.upload": "Załączenie skanów do faktury"
             }
           }
         }
@@ -850,9 +1313,82 @@
             }
           }
         }
+      },
+      "partners_auth": {
+        "type": "oauth2",
+        "description": "Autoryzacja dostępu do pobierania listy partnerów dla klienta SOF",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://api.nfg.pl/connect/authorize",
+            "scopes": {
+              "sof.partners.get": "Pobranie listy partnerów dla klienta SOF"
+            }
+          }
+        }
       }
     },
     "schemas": {
+      "CostDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "documentNumber": {
+            "type": "string",
+            "description": "Numer dokumentu"
+          },
+          "creationDate": {
+            "type": "string",
+            "description": "Numer dokumentu"
+          },
+          "duePaymentDate": {
+            "type": "string",
+            "description": "Termin płatności"
+          },
+          "invoiceNetValue": {
+            "type": "string",
+            "description": "Wartość netto"
+          },
+          "invoiceGrossValue": {
+            "type": "string",
+            "description": "Wartość brutto"
+          },
+          "dueValue": {
+            "type": "string",
+            "description": "Kwota pozostała do spłaty"
+          },
+          "isCostDocument": {
+            "type": "string",
+            "description": "Czy faktura kosztowa?"
+          },
+          "isCorrectionInvoice": {
+            "type": "string",
+            "description": "Czy korekta faktury kosztowej?"
+          }
+        }
+      },
+      "CostDocumentList": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FundingDocument"
+            }
+          }
+        }
+      },
       "FundingDocument": {
         "type": "object",
         "properties": {
@@ -1035,6 +1571,12 @@
             "items": {
               "$ref": "#/components/schemas/ValidatedProperty"
             }
+          },
+          "missingApprovals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MissingApproval"
+            }
           }
         }
       },
@@ -1049,6 +1591,24 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "MissingApproval": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int"
+          },
+          "isChecked": {
+            "type": "boolean"
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "plainText": {
+            "type": "string"
           }
         }
       },
@@ -1081,6 +1641,20 @@
             "format": "int64"
           },
           "name": {
+            "type": "string"
+          }
+        }
+      },
+      "GetPartnersResponse": {
+        "type": "object",
+        "properties": {
+          "ClientId": {
+            "type": "string"
+          },
+          "SubjectId": {
+            "type": "string"
+          },
+          "Type": {
             "type": "string"
           }
         }
@@ -1120,8 +1694,17 @@
           "grossValue": {
             "type": "number"
           },
+          "partialFundingValue":{
+            "type": "number"
+          },
           "contractor": {
             "$ref": "#/components/schemas/Contractor"
+          },
+          "approvals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Approval"
+            }
           }
         },
         "required": [
@@ -1133,7 +1716,9 @@
           "isFirstInvoiceForContractor",
           "netValue",
           "grossValue",
-          "contractor"
+          "partialFundingValue",
+          "contractor",
+          "approvals"
         ],
         "example": {
           "id": 3459255938,
@@ -1153,8 +1738,22 @@
             "companyActivityTypeId": 2,
             "companyTypeId": 1,
             "firstName": "Jan",
-            "lastName": "Kowalski"
-          }
+            "lastName": "Kowalski",
+            "telephone": "+48530530530"
+          },
+          "approvals": [{
+              "id": 40761317748932860,
+              "isChecked": true
+            },
+            {
+              "id": 40761317748932870,
+              "isChecked": true
+            },
+            {
+              "id": 40761317748932870,
+              "isChecked": true
+            }
+          ]
         },
         "xml": {
           "name": "Invoice"
@@ -1198,6 +1797,31 @@
           },
           "lastName": {
             "type": "string"
+          },
+          "telephone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxId",
+          "companyName",
+          "emailAddress",
+          "telephone",
+          "tradeId",
+          "telephone",
+          "companyActivityTypeId",
+          "companyTypeId"
+        ]
+      },
+      "Approval": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "isChecked": {
+            "type": "boolean"
           }
         }
       },
@@ -1227,6 +1851,76 @@
             "type": "boolean"
           }
         }
+      },
+      "InvoiceRequireScansResponse": {
+        "type": "object",
+        "properties": {
+          "requireScans": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InvoiceCessionTypesResponse": {
+        "type": "object",
+        "properties": {
+          "availableCessionTypes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "InvoiceScan": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "base64Content": {
+            "type": "string",
+            "description": "Zawartość pliku w formacie base64"
+          }
+        },
+        "example": {
+          "filename": "example.txt",
+          "base64Content": "RmlsZSBjb250ZW50IGV4YW1wbGU="
+        }
+      },
+      "AddInvoiceScans": {
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scans": {
+            "$ref": "#/components/schemas/InvoiceScan"
+          }
+        }
+      },
+      "CessionTypeDecision": {
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cessionTypeId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scans": {
+            "$ref": "#/components/schemas/InvoiceScan"
+          }
+        }
+      },
+      "AddInvoiceScansResponse": {
+        "type":"object"
+      },
+      "CessionTypeDecisionResponse": {
+        "type":"object"
       }
     }
   }
